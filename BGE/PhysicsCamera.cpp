@@ -43,7 +43,7 @@ void PhysicsCamera::GravityGun(RayGeom ray, bool isPhys)
 		btVector3 rayFrom = GLToBtVector(ray.pos); // Has to be some distance in front of the camera otherwise it will collide with the camera all the time
 		btVector3 rayTo = GLToBtVector(ray.pos + (ray.look * dist));
 
-		btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
+		btCollisionWorld::ClosestRayResultCallback rayCallback(btVector3(0, 0, 0), btVector3(0, 0, 0));
 		physicsFactory->dynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
 
 		if (rayCallback.hasHit())
@@ -92,7 +92,7 @@ void PhysicsCamera::GravityGun(RayGeom ray, bool isPhys)
 	game->PrintText(ss.str());
 }
 
-void PhysicsCamera::Update(float timeDelta)
+void PhysicsCamera::Update()
 {
 	// Override the one in the base class, we do not want to update our world transform from the physics object
 	// WHich is what the one in the base class does...
@@ -102,10 +102,10 @@ void PhysicsCamera::Update(float timeDelta)
 	float timeToPass = 1.0f / fireRate;
 	if ((keyState[SDL_SCANCODE_SPACE]) && (elapsed > timeToPass))
 	{
-		glm::vec3 pos = transform->position + (transform->look * 5.0f);
+		glm::vec3 pos = transform->position + (transform->look * 10.0f);
 		glm::quat q(RandomFloat(), RandomFloat(), RandomFloat(), RandomFloat());
 		glm::normalize(q);
-		shared_ptr<PhysicsController> physicsComponent = physicsFactory->CreateCapsuleRagdoll(pos);
+		shared_ptr<PhysicsController> physicsComponent = physicsFactory->CreateSphere(1, pos, glm::quat());
 		
 		float force = 5000.0f;
 		physicsComponent->rigidBody->applyCentralForce(GLToBtVector(transform->look) * force);
@@ -113,7 +113,7 @@ void PhysicsCamera::Update(float timeDelta)
 	}
 	else
 	{
-		elapsed += timeDelta;
+		elapsed += Time::deltaTime;
 	}
 	// Handle the gravity gun
 	bool leftClick = SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);

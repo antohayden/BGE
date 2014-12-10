@@ -20,6 +20,7 @@
 #include "SDL_syswm.h"
 #include "Params.h"
 
+
 using namespace BGE;
 
 shared_ptr<Game> Game::instance = nullptr;
@@ -109,7 +110,8 @@ bool Game::Run()
 	while (running) {
 		long now = SDL_GetTicks();
 		float ellapsed = ((float)(now - last)) / 1000.0f;
-		Update(ellapsed);
+		Time::deltaTime = ellapsed;
+		Update();
 		PreDraw();
 		Draw();
 		frame++;
@@ -128,9 +130,9 @@ void Game::SetGround(shared_ptr<Ground> ground)
 	Attach(ground);
 }
 
-void Game::Update(float timeDelta) {
+void Game::Update() {
 	// Check for messages
-	fps = 1.0f / timeDelta;
+	fps = 1.0f / Time::deltaTime;
 	PrintText("FPS: " + to_string((long long) fps));
 	soundSystem->Update();
 
@@ -166,9 +168,9 @@ void Game::Update(float timeDelta) {
 		exit(0);
 	}
 
-	dynamicsWorld->stepSimulation(timeDelta, 100);
+	dynamicsWorld->stepSimulation(Time::deltaTime, 100);
 
-	GameComponent::Update(timeDelta);
+	GameComponent::Update();
 }
 
 void Game::PreDraw()
@@ -489,8 +491,8 @@ bool BGE::Game::PreInitialise()
 	window = SDL_CreateWindow("",
 		SDL_WINDOWPOS_UNDEFINED_DISPLAY(display),
 		SDL_WINDOWPOS_UNDEFINED_DISPLAY(display),
-		Params::GetFloat("width") *0.9f,
-		Params::GetFloat("height") * 0.9f,
+		Params::GetFloat("width"),
+		Params::GetFloat("height"),
 		flags);
 
 	//if (Params::GetBool("riftEnabled"))
@@ -512,12 +514,14 @@ bool BGE::Game::PreInitialise()
 	keyState = SDL_GetKeyboardState(NULL);
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
-	if (err != GLEW_OK)
+	if (GLEW_OK != err)
 	{
 		char msg[2048];
 		sprintf(msg, "glewInit failed with error: %s", glewGetErrorString(err));
 		throw BGE::Exception(msg);
 	}
+
+	cout << glCreateShader << endl;
 
 	/* Turn on double buffering with a 24bit Z buffer.
 	*You may need to change this to 16 or 32 for your system */
@@ -551,4 +555,9 @@ bool BGE::Game::PreInitialise()
 	initialised = true;
 
 	return true;
+}
+
+void BGE::Game::setGravity(glm::vec3 gravity)
+{
+	dynamicsWorld->setGravity(GLToBtVector(gravity));
 }

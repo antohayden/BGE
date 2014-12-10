@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Game.h"
 #include "GameComponent.h"
 
@@ -17,8 +16,7 @@ namespace BGE
 		shared_ptr<GameComponent> ship2;
 		float elapsed;
 		bool Initialise();
-		void Update(float timeDelta);
+		void Update();
 	};
 }
-
 

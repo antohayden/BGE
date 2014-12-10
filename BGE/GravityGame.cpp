@@ -1,32 +1,34 @@
 #include "GravityGame.h"
+#include "Sphere.h"
 #include "GravityController.h"
-#include "Game.h"
-#include "GameComponent.h"
+#include "Box.h"
+#include "Steerable3DController.h"
+#include "Content.h"
 
-using namespace BGE;
 
-GravityGame::GravityGame(void)
+BGE::GravityGame::GravityGame()
 {
-	elapsed = 10000;
 }
 
-bool GravityGame::Initialise()
+
+BGE::GravityGame::~GravityGame()
 {
-	box = make_shared<Box>();
-	//sphere = make_shared<Sphere>();
-	//sgc = make_shared<GravityController>();
-	bgc = make_shared<GravityController>();
-
-	box->Attach(bgc);
-	//sphere->Attach(sgc);
-
-	Game::Initialise();
-	return true;
 }
 
-void GravityGame::Update(float timeDelta)
+bool BGE::GravityGame::Initialise()
 {
-	box->Update(timeDelta);
-	sphere->Update(timeDelta);
-	Game::Update(timeDelta);
+	std::shared_ptr<Ground> ground = make_shared<Ground>();
+	SetGround(ground);
+
+	shared_ptr<Box> box = make_shared<Box>(10, 10, 10);
+	box->Attach(make_shared<Steerable3DController>(Content::LoadModel("cobramk3")));
+	box->transform->position = glm::vec3(-10, 50, 0);
+	Attach(box);
+
+	return Game::Initialise();
+}
+
+void BGE::GravityGame::Update()
+{
+	Game::Update();
 }

@@ -1,16 +1,25 @@
 #include "GravityController.h"
-#include "Game.h"
-#include "GameComponent.h"
-using namespace BGE;
+#include "Utils.h"
 
-GravityController::GravityController(void):GameComponent(true)
+
+BGE::GravityController::GravityController()
 {
-	gravity = glm::vec3(0, -1, 0);
-
+	gravity = glm::vec3(0.0f, -9.8f, 0.0f);
 }
 
-void GravityController::Update(float timeDelta)
+
+BGE::GravityController::~GravityController()
 {
-	transform->velocity += gravity * timeDelta;
-	transform->position += transform->velocity * timeDelta;
+}
+
+void BGE::GravityController::Update()
+{
+	transform->velocity += gravity * Time::deltaTime;
+	transform->position += transform->velocity * Time::deltaTime;
+
+	if (transform->position.y - transform->scale.x < 0)
+	{
+		transform->velocity = - transform->velocity;
+		transform->position.y = transform->scale.y;
+	}
 }

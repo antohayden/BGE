@@ -3,16 +3,14 @@
 
 namespace BGE
 {
-	class GravityGame :
+	class EmptyGame :
 		public Game
 	{
 	public:
-		GravityGame();
-		~GravityGame();
+		EmptyGame();
+		~EmptyGame();
 
 		bool Initialise();
-
 		void Update();
-
 	};
 }

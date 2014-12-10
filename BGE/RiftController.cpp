@@ -17,7 +17,7 @@ void RiftController::AccumulateInputs()
 	{
 		OVR::Posef pose = ts.HeadPose.ThePose;
 		glm::quat headOrientation = OVRToGLQuat(pose.Rotation);
-		transform->position = xboxController->transform->position + (OVRToGLVector(pose.Translation) * 20.0f);
+		//transform->position = xboxController->transform->position + (OVRToGLVector(pose.Translation) * 20.0f);
 		//cout << transform->position.x << " " << transform->position.y << " " << transform->position.z << endl;
 		transform->orientation = xboxController->transform->orientation * headOrientation;
 		// Now update the XBOX Controller Look vectors
@@ -83,7 +83,7 @@ void RiftController::Cleanup()
 }
 
 
-void RiftController::Update(float timeDelta)
+void RiftController::Update()
 {
 	AccumulateInputs();
 	ovrHSWDisplayState hswDisplayState;
@@ -94,7 +94,7 @@ void RiftController::Update(float timeDelta)
 	{
 		ovrHmd_DismissHSWDisplay(hmd);
 	}
-	GameComponent::Update(timeDelta);
+	GameComponent::Update();
 }
 
 void RiftController::Connect()
